@@ -1,4 +1,5 @@
 import { StringOption } from 'necord'
+import { IsString, MinLength, MaxLength } from 'class-validator'
 
 export class VerifyDto {
   @StringOption({
@@ -8,6 +9,9 @@ export class VerifyDto {
     min_length: 6,
     max_length: 6,
   })
+  @IsString()
+  @MinLength(6)
+  @MaxLength(6)
   code: string
 
   @StringOption({
@@ -17,5 +21,8 @@ export class VerifyDto {
     min_length: 2,
     max_length: 50,
   })
+  @IsString()
+  @MinLength(2)
+  @MaxLength(50)
   name: string
 }

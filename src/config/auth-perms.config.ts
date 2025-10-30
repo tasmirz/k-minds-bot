@@ -5,13 +5,29 @@ import { Channels } from './channels.config'
 export const AuthPermissions = {
   login: {
     channels: {
-      allowed: [Channels.verification],
+      allowed: new Set([Channels.verification]),
+    },
+
+    roles: {
+      forbidden: new Set([Roles.verified]), // Verified users cannot use login command
     },
   } as const satisfies Permission,
 
   verify: {
     channels: {
-      allowed: [Channels.verification, Channels.dm],
+      allowed: new Set([Channels.verification, Channels.dm]),
+    },
+    roles: {
+      forbidden: new Set([Roles.verified]), // Verified users cannot use verify command
+    },
+  } as const satisfies Permission,
+
+  acknowledge: {
+    roles: {
+      allowed: new Set([Roles.manager]), // Only users with manager role can use this
+    },
+    channels: {
+      allowed: new Set([Channels.verification]),
     },
   } as const satisfies Permission,
 

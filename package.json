@@ -17,20 +17,23 @@
     "test:watch": "jest --watch",
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
-    "test:e2e": "jest --config ./test/jest-e2e.json"
+    "test:e2e": "jest --config ./test/jest-e2e.json",
+    "test:email": "ts-node -r tsconfig-paths/register -r dotenv/config scripts/test-email.ts"
   },
   "dependencies": {
     "@nestjs/common": "^11.0.1",
+    "@nestjs/config": "^4.0.2",
     "@nestjs/core": "^11.0.1",
     "@nestjs/mongoose": "^11.0.3",
     "@nestjs/platform-express": "^11.0.1",
+    "@types/nodemailer": "^7.0.3",
     "class-transformer": "^0.5.1",
     "class-validator": "^0.14.2",
     "discord-api-types": "^0.37.99",
     "discord.js": "^14.24.0",
-    "dotenv": "^17.2.3",
     "mongoose": "^8.19.2",
     "necord": "^6.11.1",
+    "nodemailer": "^7.0.10",
     "reflect-metadata": "^0.2.2",
     "rxjs": "^7.8.1"
   },
@@ -46,11 +49,13 @@
     "@types/jest": "^29.5.14",
     "@types/node": "^22.10.7",
     "@types/supertest": "^6.0.2",
+    "dotenv": "^17.2.3",
     "eslint": "^9.18.0",
     "eslint-config-prettier": "^10.0.1",
     "eslint-plugin-prettier": "^5.2.2",
     "globals": "^15.14.0",
     "jest": "^29.7.0",
+    "mongodb-memory-server": "^10.2.3",
     "prettier": "^3.4.2",
     "source-map-support": "^0.5.21",
     "supertest": "^7.0.0",
@@ -67,7 +72,9 @@
       "json",
       "ts"
     ],
-    "rootDir": "src",
+    "rootDir": ".",
+    "roots": ["<rootDir>/src", "<rootDir>/test"],
+    "moduleDirectories": ["node_modules", "src"],
     "testRegex": ".*\\.spec\\.ts$",
     "transform": {
       "^.+\\.(t|j)s$": "ts-jest"

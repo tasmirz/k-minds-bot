@@ -1,6 +1,6 @@
 export interface PermArrays {
-  allowed?: string[]
-  forbidden?: string[]
+  allowed?: Set<string>
+  forbidden?: Set<string>
 }
 export interface Permission {
   users?: PermArrays

@@ -35,24 +35,14 @@ export function ApplyPermissions(permission: Permission) {
   }
 }
 
-function applyPermissionToMethod(
-  prototype: any,
-  methodName: string,
-  newPermission: Permission,
-) {
+function applyPermissionToMethod(prototype: any, methodName: string, newPermission: Permission) {
   const descriptor = Object.getOwnPropertyDescriptor(prototype, methodName)
   if (!descriptor) return
 
-  const existingPermission =
-    Reflect.getMetadata(permissionsKey, prototype, methodName) || {}
+  const existingPermission = Reflect.getMetadata(permissionsKey, prototype, methodName) || {}
   const mergedPermission = { ...existingPermission, ...newPermission }
 
-  Reflect.defineMetadata(
-    permissionsKey,
-    mergedPermission,
-    prototype,
-    methodName,
-  )
+  Reflect.defineMetadata(permissionsKey, mergedPermission, prototype, methodName)
 }
 
 @Injectable()
@@ -70,12 +60,7 @@ export class PermissionGuard implements CanActivate {
     // Check channel permission
     if (!this.checkChannelPermission(permission, channelId)) {
       await interaction.reply({
-        embeds: [
-          EmbedHelper.error(
-            'Permission Denied',
-            'You are not allowed to use this command (channel)',
-          ),
-        ],
+        embeds: [EmbedHelper.error('Permission Denied', 'You are not allowed to use this command (channel)')],
         flags: MessageFlags.Ephemeral,
       })
       ;(interaction as any)._shortCircuited = true
@@ -85,12 +70,7 @@ export class PermissionGuard implements CanActivate {
     // Check if user is blocked
     if (this.isUserBlocked(permission, userId)) {
       await interaction.reply({
-        embeds: [
-          EmbedHelper.error(
-            'Permission Denied',
-            'You are blocked from using this command',
-          ),
-        ],
+        embeds: [EmbedHelper.error('Permission Denied', 'You are blocked from using this command')],
         flags: MessageFlags.Ephemeral,
       })
       ;(interaction as any)._shortCircuited = true
@@ -100,12 +80,7 @@ export class PermissionGuard implements CanActivate {
     // Check if user is allowed
     if (!this.isUserAllowed(permission, userId)) {
       await interaction.reply({
-        embeds: [
-          EmbedHelper.error(
-            'Permission Denied',
-            'You are not allowed to use this command',
-          ),
-        ],
+        embeds: [EmbedHelper.error('Permission Denied', 'You are not allowed to use this command')],
         flags: MessageFlags.Ephemeral,
       })
       ;(interaction as any)._shortCircuited = true
@@ -113,19 +88,9 @@ export class PermissionGuard implements CanActivate {
     }
 
     // Check if role is blocked
-    if (
-      this.isRoleBlocked(
-        permission,
-        interaction.member?.roles?.cache?.map((r) => r.id) || [],
-      )
-    ) {
+    if (this.isRoleBlocked(permission, interaction.member?.roles?.cache?.map((r) => r.id) || [])) {
       await interaction.reply({
-        embeds: [
-          EmbedHelper.error(
-            'Permission Denied',
-            'You are blocked from using this command (role)',
-          ),
-        ],
+        embeds: [EmbedHelper.error('Permission Denied', 'You are blocked from using this command (role)')],
         flags: MessageFlags.Ephemeral,
       })
       ;(interaction as any)._shortCircuited = true
@@ -133,19 +98,9 @@ export class PermissionGuard implements CanActivate {
     }
 
     // Check if role is allowed
-    if (
-      !this.isRoleAllowed(
-        permission,
-        interaction.member?.roles?.cache?.map((r) => r.id) || [],
-      )
-    ) {
+    if (!this.isRoleAllowed(permission, interaction.member?.roles?.cache?.map((r) => r.id) || [])) {
       await interaction.reply({
-        embeds: [
-          EmbedHelper.error(
-            'Permission Denied',
-            'You are not allowed to use this command (role)',
-          ),
-        ],
+        embeds: [EmbedHelper.error('Permission Denied', 'You are not allowed to use this command (role)')],
         flags: MessageFlags.Ephemeral,
       })
       ;(interaction as any)._shortCircuited = true
@@ -155,42 +110,37 @@ export class PermissionGuard implements CanActivate {
     return true
   }
 
-  private checkChannelPermission(
-    permission: Permission,
-    channel: string,
-  ): boolean {
+  private checkChannelPermission(permission: Permission, channel: string): boolean {
     if (!permission.channels) return true
-    if (permission.channels.forbidden?.includes(channel)) return false
-    if (
-      permission.channels.allowed &&
-      !permission.channels.allowed.includes(channel)
-    )
-      return false
+    if (permission.channels.forbidden?.has(channel)) return false
+    if (permission.channels.allowed && !permission.channels.allowed.has(channel)) return false
     return true
   }
 
   private isUserBlocked(permission: Permission, userId: string): boolean {
     if (!permission.users) return false
-    if (permission.users.forbidden?.includes(userId)) return true
+    if (permission.users.forbidden?.has(userId)) return true
     return false
   }
 
   private isUserAllowed(permission: Permission, userId: string): boolean {
     if (!permission.users) return true
-    if (permission.users?.allowed?.includes(userId)) return true
+    if (permission.users?.allowed?.has(userId)) return true
     return false
   }
 
-  private isRoleBlocked(permission: Permission, userId: string): boolean {
+  private isRoleBlocked(permission: Permission, roles: string[]): boolean {
     if (!permission.roles) return false
-    if (permission.roles.forbidden?.includes(userId)) return true
-    return false
+    const forbidden = permission.roles.forbidden
+    if (!forbidden) return false
+    return roles.some((r) => forbidden.has(r))
   }
 
-  private isRoleAllowed(permission: Permission, userId: string): boolean {
+  private isRoleAllowed(permission: Permission, roles: string[]): boolean {
     if (!permission.roles) return true
-    if (permission.roles.allowed?.includes(userId)) return true
-    return false
+    const allowed = permission.roles.allowed
+    if (!allowed) return true
+    return roles.some((r) => allowed.has(r))
   }
 
   private getPermissions(context: ExecutionContext): Permission {

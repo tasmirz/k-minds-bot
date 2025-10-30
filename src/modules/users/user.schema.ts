@@ -7,6 +7,7 @@ export enum UserRole {
   STUDENT = 'student',
   TEACHER = 'teacher',
   ADMIN = 'admin',
+  ALUMNI = 'alumni',
 }
 
 @Schema({ timestamps: true })
@@ -29,8 +30,8 @@ export class User {
   @Prop({ required: true })
   name: string;
 
-  @Prop({ type: Boolean, default: true })
-  status: boolean;
+  @Prop({ type: Number, default: 0 })
+  status: number;
 
   @Prop({ type: String })
   term: string;
