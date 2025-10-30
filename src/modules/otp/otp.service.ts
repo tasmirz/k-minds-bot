@@ -58,12 +58,16 @@ export class OtpService {
     const code = this.generateOtp()
     // otpConfig.expiresIn is in seconds, convert to milliseconds
     const expiresAt = new Date(Date.now() + otpConfig.expiresIn * 1000)
-    const fullEmail = `${email}@stud.kuet.ac.bd`
 
-    // Save OTP to database
+    // Normalize email: if caller passed a full email (contains '@'), use it as-is;
+    // otherwise append the student domain. Also lowercase and trim.
+    const inputEmail = (email || '').toString().trim()
+    const fullEmail = inputEmail.includes('@') ? inputEmail.toLowerCase() : `${inputEmail}@stud.kuet.ac.bd`
+
+    // Save OTP to database (store the normalized full email)
     await this.otpModel.create({
       code,
-      email,
+      email: fullEmail,
       discord_id: discordId,
       expires_at: expiresAt,
     })

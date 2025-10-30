@@ -3,13 +3,13 @@ export const emailConfig = {
 
   smtp: {
     host: process.env.SMTP_SERVER,
-    port: parseInt(process.env.SMTP_PORT || '587', 10),
-    secure: process.env.SMTP_SECURE === 'true',
+    port: parseInt(process.env.SMTP_PORT || '465', 10),
+    secure: true,
     auth: {
       user: process.env.SMTP_USER,
       pass: process.env.SMTP_PASSWORD,
     },
-},
+  },
 
   templates: {
     otp: {
@@ -19,10 +19,9 @@ export const emailConfig = {
 
   enabled: process.env.EMAIL_ENABLED !== 'false',
 }
-
-if (process.env.NODE_ENV === "dev" || process.env.NODE_ENV === "test") {
-  emailConfig.smtp.host = process.env.SMTP_SERVER_DEV;
-  emailConfig.smtp.port = parseInt(process.env.SMTP_PORT_DEV || '587', 10);
-  emailConfig.smtp.auth.user = process.env.SMTP_USER_DEV;
-  emailConfig.smtp.auth.pass = process.env.SMTP_PASSWORD_DEV;
+console.log(emailConfig.smtp.auth.pass)
+// emailConfig.smtp.auth.pass has "" at start and end; trim them
+if (emailConfig.smtp.auth.pass) {
+  emailConfig.smtp.auth.pass = emailConfig.smtp.auth.pass.replace(/^"+|"+$/g, '')
 }
+console.log(emailConfig.smtp.auth.pass)

@@ -1,0 +1,10 @@
+node_modules
+dist
+.env
+*.log
+.cache
+.git
+pnpm-debug.log
+coverage
+test
+**/node_modules
