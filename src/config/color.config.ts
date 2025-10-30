@@ -16,6 +16,6 @@ export const Colors = {
   idle: 0xfaa61a,
   dnd: 0xf04747,
   offline: 0x747f8d,
-} as const;
+} as const
 
-export type ColorName = keyof typeof Colors;
+export type ColorName = keyof typeof Colors

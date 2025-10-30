@@ -1,4 +1,4 @@
-import { StringOption } from 'necord';
+import { StringOption } from 'necord'
 
 export class VerifyDto {
   @StringOption({
@@ -8,7 +8,7 @@ export class VerifyDto {
     min_length: 6,
     max_length: 6,
   })
-  code: string;
+  code: string
 
   @StringOption({
     name: 'name',
@@ -17,5 +17,5 @@ export class VerifyDto {
     min_length: 2,
     max_length: 50,
   })
-  name: string;
+  name: string
 }

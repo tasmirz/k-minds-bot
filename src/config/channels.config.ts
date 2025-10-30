@@ -17,6 +17,6 @@ export const Channels = {
   verification: '1432936590749073479',
   verificationLogs: '1432942049614761994',
   dm: 'DM',
-} as const;
+} as const
 
-export type ChannelKey = keyof typeof Channels;
+export type ChannelKey = keyof typeof Channels

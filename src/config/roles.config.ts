@@ -12,6 +12,6 @@ export const Roles = {
   _2k20: '1431335600468000870',
 
   bot: '1432933794167394385',
-} as const;
+} as const
 
-export type RoleKey = keyof typeof Roles;
+export type RoleKey = keyof typeof Roles

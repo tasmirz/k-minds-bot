@@ -18,4 +18,4 @@ export const emailConfig = {
   },
 
   enabled: process.env.EMAIL_ENABLED !== 'false',
-};
+}

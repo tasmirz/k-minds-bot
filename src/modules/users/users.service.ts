@@ -1,22 +1,20 @@
-import { Injectable, Logger } from '@nestjs/common';
-import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
-import { User, UserDocument, UserRole } from '../schemas/user.schema';
+import { Injectable, Logger } from '@nestjs/common'
+import { InjectModel } from '@nestjs/mongoose'
+import { Model } from 'mongoose'
+import { User, UserDocument, UserRole } from './user.schema'
 
 @Injectable()
 export class UsersService {
-  private readonly logger = new Logger(UsersService.name);
+  private readonly logger = new Logger(UsersService.name)
 
-  constructor(
-    @InjectModel(User.name) private userModel: Model<UserDocument>,
-  ) {}
+  constructor(@InjectModel(User.name) private userModel: Model<UserDocument>) {}
 
   async findOneByEmail(email: string): Promise<User | null> {
-    return this.userModel.findOne({ email }).exec();
+    return this.userModel.findOne({ email }).exec()
   }
 
   async findOneByDiscordId(discordId: bigint): Promise<User | null> {
-    return this.userModel.findOne({ discordId: discordId.toString() }).exec();
+    return this.userModel.findOne({ discordId: discordId.toString() }).exec()
   }
 
   async createOrUpdateDiscordUser(
@@ -26,7 +24,7 @@ export class UsersService {
     term?: string,
     role: UserRole = UserRole.STUDENT,
   ): Promise<User> {
-    const discordIdStr = discordId.toString();
+    const discordIdStr = discordId.toString()
     const user = await this.userModel.findOneAndUpdate(
       { discordId: discordIdStr },
       {
@@ -39,26 +37,29 @@ export class UsersService {
         },
       },
       { new: true, upsert: true },
-    );
+    )
 
-    return user;
+    return user
   }
 
   async findByEmailPrefix(prefix: string, limit = 10): Promise<User[]> {
-    const regex = new RegExp(`^${prefix}`, 'i');
+    const regex = new RegExp(`^${prefix}`, 'i')
     return this.userModel
       .find({ email: { $regex: regex } })
       .limit(limit)
-      .exec();
+      .exec()
   }
 
-  async updateUserRole(discordId: bigint, role: UserRole): Promise<User | null> {
+  async updateUserRole(
+    discordId: bigint,
+    role: UserRole,
+  ): Promise<User | null> {
     return this.userModel
       .findOneAndUpdate(
         { discordId: discordId.toString() },
         { $set: { role } },
         { new: true },
       )
-      .exec();
+      .exec()
   }
 }

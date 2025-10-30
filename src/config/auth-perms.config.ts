@@ -1,6 +1,6 @@
-import { Permission } from '../interfaces/permission.interface';
-import { Roles } from './roles.config';
-import { Channels } from './channels.config';
+import { Permission } from '../common/interfaces/permission.interface'
+import { Roles } from './roles.config'
+import { Channels } from './channels.config'
 
 export const AuthPermissions = {
   login: {
@@ -16,6 +16,6 @@ export const AuthPermissions = {
   } as const satisfies Permission,
 
   status: {} as const satisfies Permission,
-} as const;
+} as const
 
-export type AuthPermissionKey = keyof typeof AuthPermissions;
+export type AuthPermissionKey = keyof typeof AuthPermissions

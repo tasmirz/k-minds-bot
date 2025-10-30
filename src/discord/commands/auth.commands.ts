@@ -4,16 +4,17 @@ import {
   Subcommand,
   createCommandGroupDecorator,
 } from 'necord'
-import { Injectable, Logger, UseGuards, UseInterceptors } from '@nestjs/common'
+import { Injectable, Logger, UseGuards } from '@nestjs/common'
 import { CommandInteraction } from 'discord.js'
-import { UsersService } from '../../users/users.service'
-import { OtpService } from '../../otp/otp.service'
+import { UsersService } from 'src/modules/users/users.service'
+import { OtpService } from 'src/modules/otp/otp.service'
 import { LoginDto } from '../dto/login.dto'
+import { ValidateDto } from 'src/common/decorators/validate-dto.decorator'
 import { VerifyDto } from '../dto/verify.dto'
 import { EmailPrefixAutocompleteInterceptor } from '../interceptors/email-prefix.interceptor'
 import { AuthPermissions } from '../../config/auth-perms.config'
 import { PermissionGuard, SetPermissions } from '../guards/permission.guard'
-import { EmbedHelper } from '../../helpers/embed.helper'
+import { EmbedHelper } from '../helpers/embed.helper'
 
 const AuthCommandGroup = createCommandGroupDecorator({
   name: 'auth',
@@ -38,6 +39,7 @@ export class AuthCommands {
     description: 'Start the login process with your KUET student email',
   })
   @SetPermissions(AuthPermissions.login)
+  @ValidateDto(LoginDto)
   public async onLogin(
     @Context() [interaction]: [CommandInteraction],
     @Options() loginDto: LoginDto,
@@ -69,6 +71,7 @@ export class AuthCommands {
     name: 'verify',
     description: 'Verify your email with the code sent to you',
   })
+  @ValidateDto(VerifyDto)
   public async onVerify(
     @Context() [interaction]: [CommandInteraction],
     @Options() { code, name }: VerifyDto,

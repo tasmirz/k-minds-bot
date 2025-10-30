@@ -1,5 +1,5 @@
 import { EmbedBuilder, type ColorResolvable } from 'discord.js'
-import { Colors } from '../config/color.config'
+import { Colors } from 'src/config/color.config'
 
 export class EmbedHelper {
   static success(title: string, description?: string): EmbedBuilder {

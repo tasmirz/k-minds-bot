@@ -8,4 +8,4 @@ export const otpConfig = {
   charset: '0123456789',
 
   maxAttempts: 3,
-};
+}

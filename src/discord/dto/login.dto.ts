@@ -1,5 +1,5 @@
-import { StringOption } from 'necord';
-import { IsString, IsEmail,Matches } from 'class-validator';
+import { StringOption } from 'necord'
+import { IsString, IsEmail, Matches } from 'class-validator'
 export class LoginDto {
   @StringOption({
     name: 'email',
@@ -12,5 +12,5 @@ export class LoginDto {
   @IsString()
   @IsEmail()
   @Matches(/^[a-z]{2,}[0-9]{7}$/)
-  email: string;
+  email: string
 }
