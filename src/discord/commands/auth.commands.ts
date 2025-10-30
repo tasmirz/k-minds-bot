@@ -64,7 +64,7 @@ export class AuthCommands {
   @SetPermissions(AuthPermissions.acknowledge) // Use your existing permission system
   public async onAcknowledge(@Context() [interaction]: [CommandInteraction], @Options() { user }: AcknowledgeDto) {
     if (!interaction.isChatInputCommand()) return
-    await interaction.deferReply({ ephemeral: true })
+    await interaction.deferReply()
 
     try {
       const userData = await this.usersService.findOneByDiscordId(BigInt(user.id))
@@ -133,7 +133,7 @@ export class AuthCommands {
   })
   public async onVerify(@Context() [interaction]: [CommandInteraction], @Options() verifyDto: VerifyDto) {
     if (!interaction.isChatInputCommand()) return
-    await interaction.deferReply({ ephemeral: true })
+    await interaction.deferReply()
     if (!(await validateDto(VerifyDto, verifyDto, interaction))) return
     const { code, name } = verifyDto
     try {
