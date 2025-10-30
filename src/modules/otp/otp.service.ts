@@ -56,6 +56,7 @@ export class OtpService {
     }
 
     const code = this.generateOtp()
+    // otpConfig.expiresIn is in seconds, convert to milliseconds
     const expiresAt = new Date(Date.now() + otpConfig.expiresIn * 1000)
     const fullEmail = `${email}@stud.kuet.ac.bd`
 
