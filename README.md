@@ -1,99 +1,84 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
-</p>
+# KMINDS Discord Bot
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+## Available Commands
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://coveralls.io/github/nestjs/nest?branch=master" target="_blank"><img src="https://coveralls.io/repos/github/nestjs/nest/badge.svg?branch=master#9" alt="Coverage" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg" alt="Donate us"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow" alt="Follow us on Twitter"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+### Authentication Commands
 
-## Description
+#### `/auth login <email>`
+- **Description**: Start the login process with your KUET student email
+- **Required Permission**: None (but cannot be used by verified users)
+- **Allowed Channels**: Verification channel only
+- **Details**: 
+  - Sends a verification code to the provided KUET student email
+  - Email must be in the format `username@stud.kuet.ac.bd`
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+#### `/auth verify <code>`
+- **Description**: Verify your account using the code sent to your email
+- **Required Permission**: None (but cannot be used by verified users)
+- **Allowed Channels**: Verification channel and DMs
+- **Details**:
+  - Use the verification code sent to your email
+  - Must be used in the same server where you initiated the login
 
-## Project setup
+#### `/auth acknowledge @user`
+- **Description**: Acknowledge and verify a user (Manager only)
+- **Required Permission**: Manager role
+- **Allowed Channels**: Verification channel
+- **Details**:
+  - Can only be used by users with Manager role
+  - Assigns appropriate batch role based on user's email
 
-```bash
-$ pnpm install
-```
+#### `/auth status`
+- **Description**: Check your authentication status
+- **Required Permission**: None
+- **Details**:
+  - Shows your current verification status and roles
 
-## Compile and run the project
+## Permission Management
 
-```bash
-# development
-$ pnpm run start
+The permission system is built on a flexible role-based access control (RBAC) model with the following components:
 
-# watch mode
-$ pnpm run start:dev
+### How It Works
 
-# production mode
-$ pnpm run start:prod
-```
+1. **Permission Definition**:
+   - Each command defines its permission requirements in `auth-perms.config.ts`
+   - Permissions can specify allowed/forbidden roles and channels
+   - Example:
+     ```typescript
+     login: {
+       channels: { allowed: new Set([Channels.verification]) },
+       roles: { forbidden: new Set([Roles.verified]) }
+     }
+     ```
 
-## Run tests
+2. **Permission Enforcement**:
+   - The `PermissionGuard` validates all incoming commands
+   - Checks are performed in this order:
+     1. Channel permissions
+     2. User block status
+     3. User allow status
+     4. Role block status
+     5. Role allow status
 
-```bash
-# unit tests
-$ pnpm run test
+3. **Decorators**:
+   - `@SetPermissions()`: Applies permission rules to a command
+   - `@ApplyPermissions()`: Applies permissions to all methods in a class
+   - `@UseGuards(PermissionGuard)`: Enables permission checking
 
-# e2e tests
-$ pnpm run test:e2e
+### Roles
+- **Manager**: Can use acknowledge command
+- **Verified**: Assigned after successful verification
+- **Member**: Regular member role
+- **Executive**: Executive member role
+- **Batch Roles**: Automatically assigned based on email (e.g., 2k20, 2k21, etc.)
+- **Bot**: Bot role
 
-# test coverage
-$ pnpm run test:cov
-```
+### Channel Permissions
+- **Verification Channel**: Used for authentication commands
+- **DM**: Some commands can be used in direct messages
 
-## Deployment
-
-When you're ready to deploy your NestJS application to production, there are some key steps you can take to ensure it runs as efficiently as possible. Check out the [deployment documentation](https://docs.nestjs.com/deployment) for more information.
-
-If you are looking for a cloud-based platform to deploy your NestJS application, check out [Mau](https://mau.nestjs.com), our official platform for deploying NestJS applications on AWS. Mau makes deployment straightforward and fast, requiring just a few simple steps:
-
-```bash
-$ pnpm install -g mau
-$ mau deploy
-```
-
-With Mau, you can deploy your application in just a few clicks, allowing you to focus on building features rather than managing infrastructure.
-
-## Resources
-
-Check out a few resources that may come in handy when working with NestJS:
-
-- Visit the [NestJS Documentation](https://docs.nestjs.com) to learn more about the framework.
-- For questions and support, please visit our [Discord channel](https://discord.gg/G7Qnnhy).
-- To dive deeper and get more hands-on experience, check out our official video [courses](https://courses.nestjs.com/).
-- Deploy your application to AWS with the help of [NestJS Mau](https://mau.nestjs.com) in just a few clicks.
-- Visualize your application graph and interact with the NestJS application in real-time using [NestJS Devtools](https://devtools.nestjs.com).
-- Need help with your project (part-time to full-time)? Check out our official [enterprise support](https://enterprise.nestjs.com).
-- To stay in the loop and get updates, follow us on [X](https://x.com/nestframework) and [LinkedIn](https://linkedin.com/company/nestjs).
-- Looking for a job, or have a job to offer? Check out our official [Jobs board](https://jobs.nestjs.com).
-
-## Support
-
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
-
-## Stay in touch
-
-- Author - [Kamil Myśliwiec](https://twitter.com/kammysliwiec)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
-
-## License
-
-Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
+## How to Get Verified
+1. Use `/auth login your_username@stud.kuet.ac.bd` in the verification channel
+2. Check your email for the verification code
+3. Use `/auth verify <code>` with the code you received
+4. A manager will verify your account and assign appropriate roles
