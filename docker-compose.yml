@@ -1,0 +1,12 @@
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: kminds-bot
+    restart: unless-stopped
+    ports:
+    # Map port 3000 of the host to port 6000 of the container
+      - "3000:6000"
+    env_file:
+      - .env
